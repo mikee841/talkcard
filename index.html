@@ -304,15 +304,17 @@ footer .colophon{color:var(--ink2);font-size:15px;font-style:italic}
      <h2>Want one first?</h2>
      <p>Leave your email. I'll write once, when early access opens. No newsletter avalanche.</p>
     </div>
-    <!-- PLACEHOLDER: replace the action with a real endpoint before going live,
-         e.g. https://formspree.io/f/YOUR_FORM_ID (or a mailto: link).
-         Right now the form is front-end only and submits nowhere. -->
-    <form id="wl" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+    <form id="wl" action="https://formsubmit.co/359f46368422498d267517965356252a" method="POST">
+     <input type="hidden" name="_subject" value="New TalkCard waitlist signup">
+     <input type="hidden" name="_template" value="table">
+     <input type="hidden" name="_next" value="https://mikee841.github.io/talkcard/?joined=1#waitlist">
+     <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
      <label for="em">Your email</label>
      <div class="fld">
       <input id="em" type="email" name="email" placeholder="you@yourbusiness.com" required autocomplete="email">
       <div><button class="btn" type="submit">Send it →</button></div>
      </div>
+     <p class="mono" style="font-size:.75rem;opacity:.7;margin-top:.6rem">I only use your email to tell you when early access opens. Delete anytime: just reply "remove". The form is processed by FormSubmit.</p>
     </form>
     <p class="ok" id="ok" role="status">Got it, thank you! Talk soon.</p>
    </div>
@@ -345,10 +347,7 @@ footer .colophon{color:var(--ink2);font-size:15px;font-style:italic}
 </footer>
 
 <script>
-// Front-end only: while the Formspree placeholder is in place, don't submit anywhere.
-document.getElementById('wl').addEventListener('submit',function(e){
- if(this.action.indexOf('YOUR_FORM_ID')!==-1){e.preventDefault();this.style.display='none';document.getElementById('ok').style.display='block';}
-});
+if(location.search.indexOf('joined=1')!==-1){var f=document.getElementById('wl');f.style.display='none';document.getElementById('ok').style.display='block';}
 </script>
 </body>
 </html>
