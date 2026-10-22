@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TalkCard: a business card that says hello for you</title>
+<meta name="description" content="Upload a selfie, write a few sentences. Get a mobile business card with a 15-second AI video of you introducing yourself, in your own voice, in any language.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,400;1,9..144,600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+ --paper:#f3ede1; --paper2:#ebe3d3; --ink:#1d1b18; --ink2:#4a453d; --red:#b8322a; --line:#cfc4ae;
+ --serif:"Fraunces",Georgia,serif; --body:"Newsreader",Georgia,serif; --mono:"IBM Plex Mono",ui-monospace,monospace; --hand:"Caveat",cursive;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+ background-color:var(--paper);
+ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.35 0 0 0 0 0.28 0 0 0 0 0.18 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+ color:var(--ink); font-family:var(--body); font-size:19px; line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+a{color:inherit}
+::selection{background:var(--red);color:var(--paper)}
+.wrap{max-width:1100px;margin:0 auto;padding:0 22px}
+.mono{font-family:var(--mono);font-size:12.5px;letter-spacing:.06em;text-transform:uppercase}
+.hand{font-family:var(--hand);font-weight:500}
+h1,h2,h3{font-family:var(--serif);font-weight:600;letter-spacing:-.02em;line-height:1.05;font-variation-settings:"SOFT" 50}
+em{font-style:italic}
+.btn{display:inline-block;font-family:var(--mono);font-size:14px;letter-spacing:.04em;text-transform:uppercase;text-decoration:none;
+ background:var(--ink);color:var(--paper);padding:15px 22px;border:2px solid var(--ink);box-shadow:4px 4px 0 var(--red);transition:transform .12s,box-shadow .12s;cursor:pointer}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--red)}
+.btn:focus-visible,a:focus-visible,summary:focus-visible,input:focus-visible{outline:3px solid var(--red);outline-offset:3px}
+.link{font-family:var(--mono);font-size:14px;text-transform:uppercase;letter-spacing:.04em;text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:4px}
+
+/* header */
+header.top{padding:22px 0;border-bottom:1.5px solid var(--ink)}
+header.top .wrap{display:flex;justify-content:space-between;align-items:baseline;gap:16px}
+.brand{font-family:var(--serif);font-style:italic;font-weight:600;font-size:26px;text-decoration:none;letter-spacing:-.02em}
+.brand span{color:var(--red)}
+.topmeta{display:none;color:var(--ink2)}
+.toplinks{display:flex;gap:22px;align-items:baseline}
+.toplinks .hide-s{display:none}
+
+/* hero */
+.hero{padding:44px 0 70px}
+.hero .wrap{display:grid;gap:56px}
+.kicker{color:var(--red);margin-bottom:18px;display:block}
+h1{font-size:clamp(46px,11vw,92px);font-weight:600;margin-bottom:26px}
+h1 .u{position:relative;white-space:nowrap;font-style:italic;font-weight:400}
+h1 .u svg{position:absolute;left:-2%;bottom:-.18em;width:104%;height:.32em;overflow:visible}
+.lead{font-size:21px;max-width:30ch;color:var(--ink2);margin-bottom:30px}
+.lead b{color:var(--ink);font-weight:500}
+.hero-cta{display:flex;flex-wrap:wrap;gap:22px;align-items:center}
+.small{font-size:15px;color:var(--ink2);margin-top:18px;font-style:italic}
+
+/* the paper card */
+.card-zone{position:relative;padding:20px 6px 86px;max-width:470px;margin:0 auto;width:100%}
+.bcard{position:relative;background:#fbf8f1;aspect-ratio:1.75/1;width:100%;padding:6% 6.5%;transform:rotate(-3.5deg);
+ border:1px solid #ddd3bf;box-shadow:1px 2px 0 #d8ceb9,0 14px 22px -16px rgba(60,40,10,.45);display:grid;grid-template-columns:1fr auto;gap:4%}
+.bcard:before{content:"";position:absolute;inset:0;background:inherit;z-index:-1}
+.bc-name{font-family:var(--serif);font-size:clamp(22px,6vw,30px);font-weight:600;line-height:1}
+.bc-role{font-family:var(--mono);font-size:clamp(9px,2.4vw,11px);letter-spacing:.08em;text-transform:uppercase;color:var(--red);margin:6px 0 10%}
+.bc-lines{font-family:var(--mono);font-size:clamp(9.5px,2.6vw,12px);line-height:1.75;color:var(--ink)}
+.bc-right{display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end}
+.portrait{width:clamp(70px,20vw,96px);aspect-ratio:1/1.12;background:#e9dfcc;border:1px solid var(--ink);position:relative;overflow:visible}
+.portrait svg{width:100%;height:100%;display:block}
+.qr{width:clamp(48px,13vw,62px);height:auto;background:#fbf8f1;padding:3px}
+.sticker{position:absolute;top:-16px;right:-20px;width:62px;height:62px;border-radius:50%;background:var(--red);color:#fff8ee;display:grid;place-items:center;transform:rotate(12deg);
+ box-shadow:1px 2px 0 rgba(0,0,0,.18);font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-align:center;line-height:1.15}
+.sticker b{display:block;font-size:17px;line-height:1;margin-bottom:2px}
+.stamp{position:absolute;left:-4px;top:-6px;transform:rotate(-14deg);color:var(--red);border:2px solid var(--red);padding:3px 9px;font-family:var(--mono);font-size:12px;letter-spacing:.18em;opacity:.85;
+ -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 1.6'/%3E%3C/filter%3E%3Crect width='60' height='60' filter='url(%23n)'/%3E%3C/svg%3E");mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 1.6'/%3E%3C/filter%3E%3Crect width='60' height='60' filter='url(%23n)'/%3E%3C/svg%3E")}
+.note{position:absolute;font-family:var(--hand);font-size:24px;line-height:1.05;color:var(--ink2)}
+.note.n1{left:4%;bottom:0;max-width:300px;transform:rotate(-2deg)}
+.note svg{position:absolute;overflow:visible}
+.note.n1 svg{left:210px;top:-44px;width:70px;height:46px}
+.tape{position:absolute;top:-12px;left:38%;width:90px;height:26px;background:rgba(222,206,160,.55);transform:rotate(4deg);border-left:1px dashed rgba(0,0,0,.08);border-right:1px dashed rgba(0,0,0,.08)}
+
+/* sections */
+section{padding:70px 0}
+.rule{border-top:1.5px solid var(--ink)}
+.sec-head{display:grid;gap:10px;margin-bottom:40px;align-content:start}
+.sec-head .mono{color:var(--red)}
+h2{font-size:clamp(36px,7vw,58px)}
+h2 em{font-weight:400}
+
+/* maker note */
+.maker .wrap{display:grid;gap:30px}
+.letter{max-width:620px;font-size:21px}
+.letter p+p{margin-top:16px}
+.sign{font-family:var(--hand);font-size:44px;color:var(--ink);margin-top:14px;line-height:1;transform:rotate(-3deg);display:inline-block}
+.sign small{display:block;font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:var(--ink2);transform:rotate(3deg);margin-top:8px;text-transform:uppercase}
+
+/* steps */
+ol.steps{list-style:none;counter-reset:s;display:grid;gap:0}
+ol.steps li{counter-increment:s;display:grid;grid-template-columns:64px 1fr;gap:16px;padding:26px 0;border-top:1px dashed var(--ink2)}
+ol.steps li:last-child{border-bottom:1px dashed var(--ink2)}
+ol.steps li:before{content:counter(s);font-family:var(--serif);font-style:italic;font-size:64px;line-height:.85;color:var(--red)}
+ol.steps h3{font-size:28px;margin-bottom:6px}
+ol.steps p{color:var(--ink2);max-width:48ch}
+ol.steps .aside{font-family:var(--hand);font-size:23px;color:var(--ink);display:block;margin-top:6px;transform:rotate(-1deg)}
+
+/* uses */
+.uses{background:var(--paper2);border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink)}
+.uses dl{display:grid}
+.uses .row{display:grid;gap:4px;padding:20px 0;border-bottom:1px solid var(--line)}
+.uses .row:last-child{border-bottom:0}
+.uses dt{font-family:var(--serif);font-size:30px;font-weight:600;letter-spacing:-.02em}
+.uses dt span{font-family:var(--mono);font-size:12px;color:var(--red);letter-spacing:.06em;vertical-align:middle;margin-right:12px;font-weight:400}
+.uses dd{color:var(--ink2);max-width:52ch}
+
+/* pricing */
+.tickets{display:grid;gap:30px;max-width:820px}
+.ticket{background:#fbf8f1;border:1.5px solid var(--ink);padding:28px 26px 26px;position:relative}
+.ticket:nth-child(1){transform:rotate(-.6deg)}
+.ticket:nth-child(2){transform:rotate(.8deg)}
+.ticket .t-top{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1.5px dashed var(--ink);padding-bottom:14px;margin-bottom:16px}
+.ticket h3{font-size:30px}
+.price{font-family:var(--serif);font-size:54px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.price small{font-family:var(--mono);font-size:13px;font-weight:400;letter-spacing:.03em;color:var(--ink2)}
+.ticket ul{list-style:none;margin:16px 0 24px}
+.ticket li{padding:6px 0 6px 26px;position:relative;font-size:18px}
+.ticket li:before{content:"—";position:absolute;left:0;color:var(--red)}
+.ticket.pro{background:var(--ink);color:var(--paper)}
+.ticket.pro .t-top{border-color:var(--paper)}
+.ticket.pro .price small{color:#cfc6b4}
+.ticket.pro li:before{color:#ff8a7a}
+.ticket.pro .btn{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+.ticket .stamp{position:absolute;top:-14px;right:18px;left:auto;background:var(--paper);transform:rotate(8deg)}
+.ticket.pro .stamp{background:var(--paper)}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:4px 4px 0 var(--ink)}
+.fine{font-size:15px;font-style:italic;color:var(--ink2);margin-top:26px}
+
+/* waitlist */
+.post{background:#fbf8f1;border:1.5px solid var(--ink);max-width:820px;display:grid;position:relative;
+ background-image:repeating-linear-gradient(135deg,var(--red) 0 14px,#fbf8f1 14px 28px,#1f3b73 28px 42px,#fbf8f1 42px 56px);padding:10px}
+.post-in{background:#fbf8f1;padding:30px 26px;display:grid;gap:26px}
+.post h2{font-size:clamp(32px,6vw,46px);margin-bottom:10px}
+.post p{color:var(--ink2)}
+form label{display:block;font-family:var(--mono);font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
+form .fld{display:flex;flex-direction:column;gap:14px}
+input[type=email]{font-family:var(--hand);font-size:28px;color:var(--ink);background:transparent;border:0;border-bottom:1.5px solid var(--ink);padding:6px 2px;width:100%;border-radius:0}
+input[type=email]::placeholder{color:#8c8374}
+.ok{display:none;font-family:var(--hand);font-size:30px;color:var(--red)}
+.pstamp{display:none}
+
+/* faq */
+.faq>*{max-width:760px}
+details{border-top:1px solid var(--ink)}
+details:last-of-type{border-bottom:1px solid var(--ink)}
+summary{cursor:pointer;list-style:none;padding:20px 40px 20px 0;font-family:var(--serif);font-size:24px;font-weight:600;letter-spacing:-.01em;position:relative}
+summary::-webkit-details-marker{display:none}
+summary:after{content:"+";position:absolute;right:4px;top:16px;font-family:var(--mono);font-size:26px;color:var(--red)}
+details[open] summary:after{content:"–"}
+details p{padding:0 0 22px;color:var(--ink2);max-width:60ch}
+
+footer{border-top:1.5px solid var(--ink);padding:34px 0 46px}
+footer .wrap{display:grid;gap:18px}
+footer .brand{font-size:30px}
+footer nav{display:flex;flex-wrap:wrap;gap:20px}
+footer .colophon{color:var(--ink2);font-size:15px;font-style:italic}
+
+@media(min-width:760px){
+ .topmeta{display:inline}
+ .toplinks .hide-s{display:inline}
+ .uses .row{grid-template-columns:280px 1fr;align-items:baseline}
+ .tickets{grid-template-columns:1fr 1fr}
+ .post-in{grid-template-columns:1.1fr 1fr;align-items:end;padding:40px}
+ .pstamp{display:block;position:absolute;top:26px;right:26px;width:64px;height:76px;border:2px dashed var(--line);font-family:var(--mono);font-size:10px;color:var(--ink2);text-align:center;padding-top:22px;line-height:1.3}
+ .post h2{padding-right:70px}
+ footer .wrap{grid-template-columns:1fr auto;align-items:end}
+}
+@media(min-width:980px){
+ .hero{padding:64px 0 90px}
+ .hero .wrap{grid-template-columns:1.25fr 1fr;align-items:center}
+ .card-zone{margin:30px 0 0}
+ .maker .wrap{grid-template-columns:260px 1fr}
+ .steps-wrap{display:grid;grid-template-columns:260px 1fr;gap:30px}
+ .steps-wrap .sec-head{margin:0;padding-top:24px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+ <div class="wrap">
+  <a class="brand" href="#">TalkCard<span>.</span></a>
+  <div class="toplinks">
+   <span class="mono topmeta">Made in Helsinki · Early access</span>
+   <a class="link hide-s" href="#pricing">Pricing</a>
+   <a class="link" href="#waitlist">Waitlist</a>
+  </div>
+ </div>
+</header>
+
+<main>
+<section class="hero">
+ <div class="wrap">
+  <div>
+   <span class="mono kicker">No. 001: a business card, but it talks</span>
+   <h1>Your card <span class="u">says hello<svg viewBox="0 0 300 30" preserveAspectRatio="none" aria-hidden="true"><path d="M4 18c40-9 90-13 140-11 52 2 100 6 152-2M30 25c60-6 140-7 230-3" fill="none" stroke="#b8322a" stroke-width="4" stroke-linecap="round"/></svg></span><br>for you.</h1>
+   <p class="lead">Send a selfie and a few sentences. You get back a <b>mobile business card</b> with a <b>15-second video of you</b> introducing yourself. It's in your own voice, in any language you need.</p>
+   <div class="hero-cta">
+    <a class="btn" href="#waitlist">Put me on the list</a>
+    <a class="link" href="#how">How it works</a>
+   </div>
+   <p class="small">No camera. No studio. No editing. One link, one QR code.</p>
+  </div>
+
+  <div class="card-zone">
+   <div class="bcard" role="img" aria-label="Sample TalkCard business card for Laura Example, Personal Trainer in Helsinki, with a portrait video, contact details and a QR code">
+    <span class="tape" aria-hidden="true"></span>
+    <span class="stamp" aria-hidden="true">SAMPLE</span>
+    <div>
+     <div class="bc-name">Laura Example</div>
+     <div class="bc-role">Personal Trainer · Helsinki</div>
+     <div class="bc-lines">
+      +358 40 000 0000<br>
+      laura@example.com<br>
+      WhatsApp · Instagram<br>
+      <span style="color:var(--red)">→ Book a free intro</span>
+     </div>
+    </div>
+    <div class="bc-right">
+     <div class="portrait">
+      <svg viewBox="0 0 100 112" aria-hidden="true"><path d="M50 22c-16 0-24 12-24 26 0 6 1 12 3 16-6 3-8 8-7 12h56c1-4-1-9-7-12 2-4 3-10 3-16 0-14-8-26-24-26z" fill="#3b2a20"/><ellipse cx="50" cy="52" rx="16" ry="19" fill="#efd3b5" stroke="#1d1b18" stroke-width="1.6"/><path d="M34 46c4-12 12-16 18-16 9 0 15 6 16 15-10-1-20-5-26-11-2 5-5 9-8 12z" fill="#3b2a20"/><path d="M44 62q6 4 12 0" stroke="#1d1b18" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="44" cy="52" r="1.6" fill="#1d1b18"/><circle cx="56" cy="52" r="1.6" fill="#1d1b18"/><path d="M42 70v6c-14 3-24 12-26 36h68c-2-24-12-33-26-36v-6" fill="#1d1b18"/></svg>
+      <span class="sticker" aria-hidden="true"><span><b>▶</b>PLAY<br>0:15</span></span>
+     </div>
+     <svg class="qr" viewBox="0 0 25 25" shape-rendering="crispEdges" role="img" aria-label="QR code (sample)"><path d="M0 0h1v1h-1zM1 0h1v1h-1zM2 0h1v1h-1zM3 0h1v1h-1zM4 0h1v1h-1zM5 0h1v1h-1zM6 0h1v1h-1zM8 0h1v1h-1zM11 0h1v1h-1zM12 0h1v1h-1zM14 0h1v1h-1zM18 0h1v1h-1zM19 0h1v1h-1zM20 0h1v1h-1zM21 0h1v1h-1zM22 0h1v1h-1zM23 0h1v1h-1zM24 0h1v1h-1zM0 1h1v1h-1zM6 1h1v1h-1zM9 1h1v1h-1zM10 1h1v1h-1zM16 1h1v1h-1zM18 1h1v1h-1zM24 1h1v1h-1zM0 2h1v1h-1zM2 2h1v1h-1zM3 2h1v1h-1zM4 2h1v1h-1zM6 2h1v1h-1zM10 2h1v1h-1zM12 2h1v1h-1zM13 2h1v1h-1zM14 2h1v1h-1zM16 2h1v1h-1zM18 2h1v1h-1zM20 2h1v1h-1zM21 2h1v1h-1zM22 2h1v1h-1zM24 2h1v1h-1zM0 3h1v1h-1zM2 3h1v1h-1zM3 3h1v1h-1zM4 3h1v1h-1zM6 3h1v1h-1zM12 3h1v1h-1zM13 3h1v1h-1zM16 3h1v1h-1zM18 3h1v1h-1zM20 3h1v1h-1zM21 3h1v1h-1zM22 3h1v1h-1zM24 3h1v1h-1zM0 4h1v1h-1zM2 4h1v1h-1zM3 4h1v1h-1zM4 4h1v1h-1zM6 4h1v1h-1zM9 4h1v1h-1zM11 4h1v1h-1zM13 4h1v1h-1zM14 4h1v1h-1zM16 4h1v1h-1zM18 4h1v1h-1zM20 4h1v1h-1zM21 4h1v1h-1zM22 4h1v1h-1zM24 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM10 5h1v1h-1zM12 5h1v1h-1zM14 5h1v1h-1zM16 5h1v1h-1zM18 5h1v1h-1zM24 5h1v1h-1zM0 6h1v1h-1zM1 6h1v1h-1zM2 6h1v1h-1zM3 6h1v1h-1zM4 6h1v1h-1zM5 6h1v1h-1zM6 6h1v1h-1zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM19 6h1v1h-1zM20 6h1v1h-1zM21 6h1v1h-1zM22 6h1v1h-1zM23 6h1v1h-1zM24 6h1v1h-1zM8 7h1v1h-1zM10 7h1v1h-1zM11 7h1v1h-1zM13 7h1v1h-1zM15 7h1v1h-1zM16 7h1v1h-1zM0 8h1v1h-1zM1 8h1v1h-1zM3 8h1v1h-1zM4 8h1v1h-1zM6 8h1v1h-1zM9 8h1v1h-1zM10 8h1v1h-1zM11 8h1v1h-1zM16 8h1v1h-1zM18 8h1v1h-1zM24 8h1v1h-1zM4 9h1v1h-1zM7 9h1v1h-1zM9 9h1v1h-1zM12 9h1v1h-1zM13 9h1v1h-1zM14 9h1v1h-1zM15 9h1v1h-1zM16 9h1v1h-1zM17 9h1v1h-1zM19 9h1v1h-1zM20 9h1v1h-1zM21 9h1v1h-1zM22 9h1v1h-1zM23 9h1v1h-1zM1 10h1v1h-1zM2 10h1v1h-1zM3 10h1v1h-1zM4 10h1v1h-1zM6 10h1v1h-1zM10 10h1v1h-1zM11 10h1v1h-1zM13 10h1v1h-1zM15 10h1v1h-1zM16 10h1v1h-1zM17 10h1v1h-1zM19 10h1v1h-1zM20 10h1v1h-1zM21 10h1v1h-1zM24 10h1v1h-1zM1 11h1v1h-1zM3 11h1v1h-1zM4 11h1v1h-1zM7 11h1v1h-1zM8 11h1v1h-1zM9 11h1v1h-1zM10 11h1v1h-1zM11 11h1v1h-1zM12 11h1v1h-1zM14 11h1v1h-1zM17 11h1v1h-1zM18 11h1v1h-1zM19 11h1v1h-1zM21 11h1v1h-1zM22 11h1v1h-1zM23 11h1v1h-1zM24 11h1v1h-1zM0 12h1v1h-1zM2 12h1v1h-1zM3 12h1v1h-1zM4 12h1v1h-1zM6 12h1v1h-1zM7 12h1v1h-1zM8 12h1v1h-1zM9 12h1v1h-1zM11 12h1v1h-1zM12 12h1v1h-1zM15 12h1v1h-1zM16 12h1v1h-1zM18 12h1v1h-1zM19 12h1v1h-1zM24 12h1v1h-1zM0 13h1v1h-1zM9 13h1v1h-1zM14 13h1v1h-1zM15 13h1v1h-1zM16 13h1v1h-1zM20 13h1v1h-1zM23 13h1v1h-1zM0 14h1v1h-1zM1 14h1v1h-1zM3 14h1v1h-1zM5 14h1v1h-1zM6 14h1v1h-1zM11 14h1v1h-1zM12 14h1v1h-1zM13 14h1v1h-1zM14 14h1v1h-1zM15 14h1v1h-1zM16 14h1v1h-1zM18 14h1v1h-1zM20 14h1v1h-1zM21 14h1v1h-1zM22 14h1v1h-1zM23 14h1v1h-1zM24 14h1v1h-1zM0 15h1v1h-1zM3 15h1v1h-1zM4 15h1v1h-1zM5 15h1v1h-1zM7 15h1v1h-1zM8 15h1v1h-1zM11 15h1v1h-1zM14 15h1v1h-1zM17 15h1v1h-1zM18 15h1v1h-1zM19 15h1v1h-1zM21 15h1v1h-1zM22 15h1v1h-1zM24 15h1v1h-1zM0 16h1v1h-1zM3 16h1v1h-1zM4 16h1v1h-1zM6 16h1v1h-1zM8 16h1v1h-1zM9 16h1v1h-1zM12 16h1v1h-1zM13 16h1v1h-1zM16 16h1v1h-1zM17 16h1v1h-1zM18 16h1v1h-1zM19 16h1v1h-1zM20 16h1v1h-1zM22 16h1v1h-1zM23 16h1v1h-1zM8 17h1v1h-1zM9 17h1v1h-1zM10 17h1v1h-1zM11 17h1v1h-1zM12 17h1v1h-1zM16 17h1v1h-1zM20 17h1v1h-1zM22 17h1v1h-1zM23 17h1v1h-1zM0 18h1v1h-1zM1 18h1v1h-1zM2 18h1v1h-1zM3 18h1v1h-1zM4 18h1v1h-1zM5 18h1v1h-1zM6 18h1v1h-1zM9 18h1v1h-1zM11 18h1v1h-1zM13 18h1v1h-1zM14 18h1v1h-1zM16 18h1v1h-1zM18 18h1v1h-1zM20 18h1v1h-1zM24 18h1v1h-1zM0 19h1v1h-1zM6 19h1v1h-1zM12 19h1v1h-1zM13 19h1v1h-1zM15 19h1v1h-1zM16 19h1v1h-1zM20 19h1v1h-1zM23 19h1v1h-1zM24 19h1v1h-1zM0 20h1v1h-1zM2 20h1v1h-1zM3 20h1v1h-1zM4 20h1v1h-1zM6 20h1v1h-1zM8 20h1v1h-1zM10 20h1v1h-1zM12 20h1v1h-1zM14 20h1v1h-1zM15 20h1v1h-1zM16 20h1v1h-1zM17 20h1v1h-1zM18 20h1v1h-1zM19 20h1v1h-1zM20 20h1v1h-1zM0 21h1v1h-1zM2 21h1v1h-1zM3 21h1v1h-1zM4 21h1v1h-1zM6 21h1v1h-1zM8 21h1v1h-1zM9 21h1v1h-1zM10 21h1v1h-1zM11 21h1v1h-1zM16 21h1v1h-1zM17 21h1v1h-1zM18 21h1v1h-1zM23 21h1v1h-1zM24 21h1v1h-1zM0 22h1v1h-1zM2 22h1v1h-1zM3 22h1v1h-1zM4 22h1v1h-1zM6 22h1v1h-1zM9 22h1v1h-1zM10 22h1v1h-1zM11 22h1v1h-1zM12 22h1v1h-1zM15 22h1v1h-1zM17 22h1v1h-1zM20 22h1v1h-1zM21 22h1v1h-1zM22 22h1v1h-1zM23 22h1v1h-1zM24 22h1v1h-1zM0 23h1v1h-1zM6 23h1v1h-1zM8 23h1v1h-1zM12 23h1v1h-1zM14 23h1v1h-1zM15 23h1v1h-1zM19 23h1v1h-1zM20 23h1v1h-1zM22 23h1v1h-1zM23 23h1v1h-1zM24 23h1v1h-1zM0 24h1v1h-1zM1 24h1v1h-1zM2 24h1v1h-1zM3 24h1v1h-1zM4 24h1v1h-1zM5 24h1v1h-1zM6 24h1v1h-1zM8 24h1v1h-1zM11 24h1v1h-1zM16 24h1v1h-1zM18 24h1v1h-1zM21 24h1v1h-1zM24 24h1v1h-1z" fill="#1d1b18"/></svg>
+    </div>
+   </div>
+   <div class="note n1">tap the sticker &amp; Laura says hello.<br>in EN, FI or ES.
+    <svg viewBox="0 0 70 46" aria-hidden="true"><path d="M2 40c20 2 42-6 56-30M48 8l11 1 1 11" fill="none" stroke="#4a453d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+   </div>
+  </div>
+ </div>
+</section>
+
+<section class="maker rule">
+ <div class="wrap">
+  <div class="sec-head"><span class="mono">A note from the maker</span></div>
+  <div class="letter">
+   <p>I built this because paper business cards end up in a drawer. Link-in-bio pages all look the same.</p>
+   <p>When you pick a trainer, a realtor or a tattoo artist, you're really picking a <em>person</em>. Fifteen seconds of their face and voice tells you more than a logo ever will. So that's the whole idea: a card that says hello, and you still don't have to film anything.</p>
+   <span class="sign">Miika<small>Founder, TalkCard · Helsinki</small></span>
+  </div>
+ </div>
+</section>
+
+<section id="how" class="rule">
+ <div class="wrap steps-wrap">
+  <div class="sec-head"><span class="mono">How it works</span><h2>Three steps. <em>About five minutes.</em></h2></div>
+  <ol class="steps">
+   <li><div><h3>Upload a selfie.</h3><p>One clear, front-facing photo. Add a short voice sample if you want the video to sound like you.</p><span class="aside">kitchen lighting is fine, really</span></div></li>
+   <li><div><h3>Write two or three sentences.</h3><p>Who you are, who you help and what people should do next. Then pick the languages your clients speak.</p></div></li>
+   <li><div><h3>Share the card.</h3><p>You get your own link and QR code with call, email, booking and social buttons, plus the talking video.</p><span class="aside">print the QR on your old cards. Recycling!</span></div></li>
+  </ol>
+ </div>
+</section>
+
+<section id="uses" class="uses">
+ <div class="wrap">
+  <div class="sec-head"><span class="mono">Who it's for</span><h2>People who are <em>the brand.</em></h2></div>
+  <dl>
+   <div class="row"><dt><span>01</span>Realtors</dt><dd>Put your face on every listing and window sign, and greet international buyers in their own language.</dd></div>
+   <div class="row"><dt><span>02</span>Coaches &amp; PTs</dt><dd>Let new clients hear how you coach before they book that first session.</dd></div>
+   <div class="row"><dt><span>03</span>Tattoo artists</dt><dd>Your style, your booking rules and a friendly hello, all in one link in your bio.</dd></div>
+   <div class="row"><dt><span>04</span>Freelancers</dt><dd>Stand out in proposals and DMs with a pitch short enough that people actually watch it.</dd></div>
+   <div class="row"><dt><span>05</span>Salespeople</dt><dd>Follow up after an event with a card that speaks for you in every market you cover.</dd></div>
+  </dl>
+ </div>
+</section>
+
+<section id="pricing">
+ <div class="wrap">
+  <div class="sec-head"><span class="mono">Pricing (proposed)</span><h2>Two options. <em>That's it.</em></h2></div>
+  <div class="tickets">
+   <div class="ticket">
+    <div class="t-top"><h3>Free trial</h3><span class="mono">14 days</span></div>
+    <div class="price">$0</div>
+    <ul><li>1 card with your own link and QR code</li><li>1 intro video, 1 language</li><li>Contact, booking and social buttons</li><li>Small TalkCard mark on the card</li></ul>
+    <a class="btn ghost" href="#waitlist">Join the waitlist</a>
+   </div>
+   <div class="ticket pro">
+    <span class="stamp" aria-hidden="true">PROPOSED</span>
+    <div class="t-top"><h3>Pro</h3><span class="mono">monthly</span></div>
+    <div class="price">$12 <small>/ month</small></div>
+    <ul><li>Your own cloned voice</li><li>Intro video in several languages</li><li>Re-record your script anytime</li><li>Custom domain, no TalkCard mark</li><li>See who viewed and tapped</li></ul>
+    <a class="btn" href="#waitlist">Get early access</a>
+   </div>
+  </div>
+  <p class="fine">Prices are proposals and may change before launch. Monthly, no lock-in. Team plans later.</p>
+ </div>
+</section>
+
+<section id="waitlist" style="padding-top:20px">
+ <div class="wrap">
+  <div class="post">
+   <div class="post-in">
+    <div>
+     <span class="mono" style="color:var(--red)">Early access</span>
+     <h2>Want one first?</h2>
+     <p>Leave your email. I'll write once, when early access opens. No newsletter avalanche.</p>
+    </div>
+    <!-- PLACEHOLDER: replace the action with a real endpoint before going live,
+         e.g. https://formspree.io/f/YOUR_FORM_ID (or a mailto: link).
+         Right now the form is front-end only and submits nowhere. -->
+    <form id="wl" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+     <label for="em">Your email</label>
+     <div class="fld">
+      <input id="em" type="email" name="email" placeholder="you@yourbusiness.com" required autocomplete="email">
+      <div><button class="btn" type="submit">Send it →</button></div>
+     </div>
+    </form>
+    <p class="ok" id="ok" role="status">Got it, thank you! Talk soon.</p>
+   </div>
+   <span class="pstamp" aria-hidden="true">STAMP<br>HERE</span>
+  </div>
+ </div>
+</section>
+
+<section id="faq">
+ <div class="wrap faq">
+  <div class="sec-head"><span class="mono">Questions people ask</span><h2>FAQ</h2></div>
+  <details open><summary>Do I need to film anything?</summary><p>No. One selfie is enough, and the AI animates it into a short talking video. If you'd rather use real footage, you can upload your own clip instead.</p></details>
+  <details><summary>Will it really sound like me?</summary><p>On Pro, you record a short voice sample and the intro is made in your own voice, even in languages you don't speak. You can also pick a stock voice.</p></details>
+  <details><summary>Which languages?</summary><p>The plan is to cover the major languages today's voice and video AI supports, including English, Finnish, Swedish, Spanish, German and French. The final list will be confirmed at launch.</p></details>
+  <details><summary>What happens to my face and voice?</summary><p>They're used only to make your own videos, and you can delete them anytime. No one gets a video of you without your consent.</p></details>
+  <details><summary>Does the other person need an app?</summary><p>No. A TalkCard is a normal web page. It opens in any phone browser from a link, a QR code or an NFC tag.</p></details>
+  <details><summary>Can I cancel?</summary><p>Anytime. It's monthly, with no lock-in.</p></details>
+ </div>
+</section>
+</main>
+
+<footer>
+ <div class="wrap">
+  <div>
+   <a class="brand" href="#">TalkCard<span>.</span></a>
+   <p class="colophon">© 2026 TalkCard. An early concept, made by hand in Helsinki.</p>
+  </div>
+  <nav aria-label="Footer"><a class="link" href="#how">How</a><a class="link" href="#pricing">Pricing</a><a class="link" href="#faq">FAQ</a><a class="link" href="mailto:hello@example.com">Contact</a></nav>
+ </div>
+</footer>
+
+<script>
+// Front-end only: while the Formspree placeholder is in place, don't submit anywhere.
+document.getElementById('wl').addEventListener('submit',function(e){
+ if(this.action.indexOf('YOUR_FORM_ID')!==-1){e.preventDefault();this.style.display='none';document.getElementById('ok').style.display='block';}
+});
+</script>
+</body>
+</html>
